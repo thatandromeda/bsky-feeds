@@ -1,11 +1,7 @@
-import { BskyAgent, ComAtprotoServerListAppPasswords } from '@atproto/api'
+import { BskyAgent } from '@atproto/api'
 import { Database } from '../db'
 import { Post } from '../db/schema'
 import dotenv from 'dotenv'
-
-import {ObjectId} from 'mongodb'
-
-import crypto from 'crypto'
 
 export class UpdateFeed {
 
@@ -48,8 +44,7 @@ export class UpdateFeed {
 
         dotenv.config()
 
-        if(reset) await db.db().collection('list_members').deleteMany() // deleteFrom('list_members').executeTakeFirst()
-        // if(reset) await db.db().collection('post').deleteMany() // deleteFrom('post').executeTakeFirst()
+        if(reset) await db.deleteFrom('list_members').executeTakeFirst()
 
         const agent = new BskyAgent({ service: 'https://bsky.social' })
 
@@ -71,8 +66,11 @@ export class UpdateFeed {
             const new_members:string[] = []
 
             const lists:string[] = `${process.env.FEEDGEN_LISTS}`.split("|")
-        
-            const existing_members_obj = await db.db().collection('list_members').find().toArray() //.selectFrom('list_members').selectAll().execute()
+
+            const existing_members_obj = await db
+                .selectFrom('list_members')
+                .selectAll()
+                .execute()
             existing_members_obj.forEach((existing_member)=>{
                 old_members.push(existing_member.did)
             })
@@ -106,24 +104,12 @@ export class UpdateFeed {
                 }
             })
 
-            const session = db.startSession()
-
-            try {
-                await session.withTransaction(async () => {
-                    await db.db().collection('list_members').deleteMany();
-                    await db.db().collection('list_members').insertMany(all_members_obj)
-                })
-            } finally {
-                await session.endSession();
-            }
-            
-
-            /*await db.transaction().execute(
+            await db.transaction().execute(
                 async (trx) => {
                     await trx.deleteFrom('list_members').executeTakeFirstOrThrow()
                     await trx.replaceInto('list_members').values(all_members_obj).executeTakeFirstOrThrow()
                 }
-            )*/
+            )
 
             let i = 0
             let total = new_members.length
@@ -147,18 +133,18 @@ export class UpdateFeed {
 
                             if(post?.post.record['text'].includes(`${process.env.FEEDGEN_SYMBOL}`)) {
 
-                                const hash = crypto.createHash('shake256',{outputLength:12}).update(post.post?.uri).digest('hex').toString()
-
                                 const to_insert: Post = {
-                                    _id: new ObjectId(hash),
                                     uri: post.post?.uri,
                                     cid: post.post?.cid,
                                     replyParent: <string> post.reply?.parent.uri ?? null,
                                     replyRoot: <string> post.reply?.root.uri ?? null,
                                     indexedAt: new Date(post.post?.indexedAt).getTime() ?? new Date().getTime()
                                 }
-                                
-                                db.db().collection('post').replaceOne({"uri":to_insert.uri},to_insert,{upsert:true}) // insertInto('post').values(to_insert).onConflict((oc) => oc.doNothing()).executeTakeFirstOrThrow()
+
+                                db.insertInto('post')
+                                       .values(to_insert)
+                                       .onConflict((oc) => oc.doNothing())
+                                       .executeTakeFirstOrThrow()
                             }
                         }
 
