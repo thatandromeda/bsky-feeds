@@ -17,21 +17,27 @@ Some level of caching needs to go in - possibly just a cache header in feed-gene
 Set up things you'll need on Bluesky:
 * Create a mutelist.
     * Add the accounts you want the feed to follow here. (Make sure to get their permission first!)
-    * Record its `did`; you'll use this as `env.FEEDGEN_LISTS`.
+    * Record its URL; you'll use it to create `env.FEEDGEN_LISTS`.
 * Create an app password.
     * Record this; you'll use it as `env.FEEDGEN_PASSWORD`.
 
+Customize your environment variables:
+* Copy `.env.example` to `.env`.
+* Update it according to the inline instructions.
+* For `FEEDGEN_HOSTNAME`, use `${APP_URL}`.
+    * Your actual URL won't exisst until after your first successful deployment, so you'll need to use this dynamic reference.
+
 Set up your hosting:
 * Fork this code to your account.
-* Sign up for a digital ocean account, if needed.
-* At digital ocean:
+* Sign up for a DigitalOcean account, if needed.
+* At DigitalOcean:
     * Create a new app.
     * Authorize it on your forked repo.
     * Update the plan info. (The basic plan is cheapest. You only need one copy of the web service under your app.)
-    * Connect it to your mongodb.
     * On the environment variables step:
         * Go to global > bulk editor.
-        * Copy-paste `.env.example`.
-        * Update it according to the inline comments.
-        * `FEEDGEN_HOSTNAME` won't be available until after your first deployment; you'll need to get your deployed app's URL, update the env, and redeploy.
+        * Copy-paste `.env`.
+        * After DigitalOcean parses this, make sure to encrypt your `FEEDGEN_PASSWORD`.
+    * [Configure health checks](https://docs.digitalocean.com/support/my-app-deployment-failed-because-of-a-health-check/) to use HTTP. The endpoint you need is `/xrpc/app.bsky.feed.getFeedSkeleton?feed=at://did:plc:YOUR_BSKY_DID/app.bsky.feed.generator/YOUR_FEED_NAME` (the same feed name you set in `.env`).
     * Total cost is $10/month.
+
