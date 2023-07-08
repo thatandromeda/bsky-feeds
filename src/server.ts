@@ -63,21 +63,14 @@ export class FeedGenerator {
   }
 
   async start(): Promise<http.Server> {
-    console.log('migrating...')
     await migrateToLatest(this.db)
 
-    console.log('creating updateFeed...')
     const updateFeed = new UpdateFeed(this.db)
-    console.log('starting updateFeed...')
     await updateFeed.start()
 
-    console.log('running firehose...')
     this.firehose.run()
-    console.log('establishing server...')
     this.server = this.app.listen(this.cfg.port, this.cfg.listenhost)
-    console.log('listening...')
     await events.once(this.server, 'listening')
-    console.log('returning server...')
     return this.server
   }
 }

@@ -38,6 +38,6 @@ Set up your hosting:
         * Go to global > bulk editor.
         * Copy-paste `.env`.
         * After DigitalOcean parses this, make sure to encrypt your `FEEDGEN_PASSWORD`.
-    * [Configure health checks](https://docs.digitalocean.com/support/my-app-deployment-failed-because-of-a-health-check/) to use HTTP. The endpoint you need is `/xrpc/app.bsky.feed.getFeedSkeleton?feed=at://did:plc:YOUR_BSKY_DID/app.bsky.feed.generator/YOUR_FEED_NAME` (the same feed name you set in `.env`).
+    * [Configure health checks](https://docs.digitalocean.com/support/my-app-deployment-failed-because-of-a-health-check/) to use HTTP. The endpoint you need is `/.well-known/did.json` (the same feed name you set in `.env`).
     * Total cost is $10/month.
 
