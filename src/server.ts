@@ -63,15 +63,17 @@ export class FeedGenerator {
   }
 
   async start(): Promise<http.Server> {
-    await migrateToLatest(this.db)
-
-    const updateFeed = new UpdateFeed(this.db)
-    await updateFeed.start()
-
     this.firehose.run()
     this.server = this.app.listen(this.cfg.port, this.cfg.listenhost)
     await events.once(this.server, 'listening')
     return this.server
+  }
+
+  async update() {
+    await migrateToLatest(this.db)
+
+    const updateFeed = new UpdateFeed(this.db)
+    await updateFeed.start()
   }
 }
 
