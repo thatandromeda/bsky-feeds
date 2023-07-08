@@ -19,7 +19,6 @@ const run = async () => {
     serviceDid,
   })
   await server.start()
-  await server.update()
   console.log(
     `🤖 running feed generator at http://${server.cfg.listenhost}:${server.cfg.port}`,
   )
