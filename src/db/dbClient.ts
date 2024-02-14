@@ -21,4 +21,5 @@ export const migrateToLatest = async (db: Database) => {
 }
 
 export type Database = Kysely<DatabaseSchema>
-export const dbClient = createDb(process.env.FEEDGEN_SQLITE_LOCATION ?? '')
+const dbClient = createDb(process.env.FEEDGEN_SQLITE_LOCATION ?? '')
+export default dbClient

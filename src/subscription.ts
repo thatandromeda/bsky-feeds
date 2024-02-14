@@ -8,7 +8,7 @@ import dotenv from 'dotenv'
 import algos from './algos'
 import batchUpdate from './addn/batchUpdate'
 
-import { Database } from './db'
+import { Database } from './db/dbClient'
 
 import crypto from 'crypto'
 import { Post } from './db/schema'
