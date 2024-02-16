@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-import { Database } from '../db/dbClient'
+import { Database } from '../db'
 import { Post } from '../db/schema'
 import { BskyAgent } from '@atproto/api'
 

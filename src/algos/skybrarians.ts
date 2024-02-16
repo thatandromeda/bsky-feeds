@@ -1,12 +1,15 @@
 import { QueryParams } from '../lexicon/types/app/bsky/feed/getFeedSkeleton'
+import { AlgoManager } from '../addn/algoManager'
 import { AppContext } from '../config'
 import { InvalidRequestError } from '@atproto/xrpc-server'
+import { Post } from '../db/schema'
+import getListMembers from '../addn/getListMembers'
 
 // max 15 chars
 export const shortname = 'skybrarians'
 
 export const handler = async (ctx: AppContext, params: QueryParams) => {
-  let builder = ctx.db
+  let builder = ctx.db.client
     .selectFrom('post')
     .selectAll()
     .orderBy('indexedAt', 'desc')
@@ -20,10 +23,10 @@ export const handler = async (ctx: AppContext, params: QueryParams) => {
     }
     const timeStr = new Date(parseInt(indexedAt, 10)).getTime()
     builder = builder
-      .where(({ or, cmpr }) =>
-        or([
-          cmpr('post.indexedAt', '<', timeStr),
-          cmpr('post.indexedAt', '=', timeStr),
+      .where((eb) =>
+        eb.or([
+          eb('post.indexedAt', '<', timeStr),
+          eb('post.indexedAt', '=', timeStr),
         ]),
       )
       .where('post.cid', '<', cid)
@@ -43,5 +46,29 @@ export const handler = async (ctx: AppContext, params: QueryParams) => {
   return {
     cursor,
     feed,
+  }
+}
+
+export class manager extends AlgoManager {
+  public name: string = shortname
+  public authorList: string[] = []
+
+  public async periodicTask() {
+    const lists: string[] = `${process.env.FEEDGEN_LISTS}`.split('|')
+
+    for (const list of lists) {
+      const members = await getListMembers(list, this.agent)
+      // May be nonunique but that doesn't matter for the include below
+      this.authorList = [...this.authorList, ...members]
+    }
+  }
+
+  public async filter_post(post: Post): Promise<Boolean> {
+    if (post.text.toLowerCase().includes(`${process.env.FEEDGEN_SYMBOL}`)) {
+      if (this.authorList.includes(post.author)) {
+        return true
+      }
+    }
+    return false
   }
 }

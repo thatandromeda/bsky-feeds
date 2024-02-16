@@ -4,6 +4,8 @@ export type DatabaseSchema = {
   list_members: ListMember
 }
 
+export type DatabaseSchemaReference = 'post' | 'sub_state' | 'list_members'
+
 export type Post = {
   _id: string | null
   uri: string

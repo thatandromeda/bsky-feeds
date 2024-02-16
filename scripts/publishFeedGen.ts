@@ -17,20 +17,19 @@ const run = async () => {
   // A short name for the record that will show in urls
   // Lowercase with no spaces.
   // Ex: whats-hot
-  const recordName = 'for-science'
+  const recordName = `${process.env.FEED_NAME}`
 
   // A display name for your feed
   // Ex: What's Hot
-  const displayName = 'Science'
+  const displayName = `${process.env.FEED_DISPLAY_NAME}`
 
   // (Optional) A description of your feed
   // Ex: Top trending content from the whole network
-  const description =
-    'The Science Feed. A curated feed from Bluesky professional scientists,  science communicators, and science/nature photographer/artists. See https://l.bossett.io/vkeNf for more information! 🧪'
+  const description = `${process.env.FEED_DESCRIPTION}`
 
   // (Optional) The path to an image to be used as your feed's avatar
   // Ex: ~/path/to/avatar.jpeg
-  const avatar: string = 'images/testtube.jpg'
+  const avatar: string = `${process.env.FEED_AVATAR}`
 
   // -------------------------------------
   // NO NEED TO TOUCH ANYTHING BELOW HERE

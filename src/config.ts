@@ -1,5 +1,5 @@
 import { DidResolver } from '@atproto/identity'
-import { Database } from './db/dbClient'
+import { Database } from './db'
 
 export type AppContext = {
   db: Database

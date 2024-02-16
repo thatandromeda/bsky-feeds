@@ -8,10 +8,9 @@ import dotenv from 'dotenv'
 import algos from './algos'
 import batchUpdate from './addn/batchUpdate'
 
-import { Database } from './db/dbClient'
+import { Database } from './db'
 
 import crypto from 'crypto'
-import { Post } from './db/schema'
 import { BskyAgent } from '@atproto/api'
 
 export class FirehoseSubscription extends FirehoseSubscriptionBase {

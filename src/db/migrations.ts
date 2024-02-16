@@ -12,20 +12,28 @@ migrations['001'] = {
   async up(db: Kysely<unknown>) {
     await db.schema
       .createTable('post')
+      .addColumn('_id', 'varchar')
       .addColumn('uri', 'varchar', (col) => col.primaryKey())
       .addColumn('cid', 'varchar', (col) => col.notNull())
       .addColumn('replyParent', 'varchar')
       .addColumn('replyRoot', 'varchar')
       .addColumn('indexedAt', 'varchar', (col) => col.notNull())
+      .addColumn('author', 'varchar', (col) => col.notNull())
+      .addColumn('text', 'varchar', (col) => col.notNull())
+      .addColumn('algoTags', 'blob')
+      .addColumn('embed', 'blob')
+      .addColumn('tags', 'blob')
       .execute()
     await db.schema
       .createTable('sub_state')
+      .addColumn('_id', 'varchar')
       .addColumn('service', 'varchar', (col) => col.primaryKey())
       .addColumn('cursor', 'integer', (col) => col.notNull())
       .execute()
     await db.schema
       .createTable('list_members')
-      .addColumn('did', 'varchar',(col) => col.primaryKey())
+      .addColumn('_id', 'varchar')
+      .addColumn('did', 'varchar', (col) => col.primaryKey())
       .execute()
   },
   async down(db: Kysely<unknown>) {
